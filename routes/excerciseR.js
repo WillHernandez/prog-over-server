@@ -38,6 +38,13 @@ router.post('/notes/:excercise', (req, res) => {
 	.catch(e => res.status(400).json(e.message))
 })
 
+router.delete('/notes/:excercise/:index', (req, res) => {
+	excerciseC.deleteExcerciseNote(req)
+	.then(data => res.status(200).json(data))
+	.catch(e => res.status(400).json(e.message))
+})
+
+
 router.delete('/:excercise', (req, res) => {
 	excerciseC.deleteExcercise(req.params.excercise)
 	.then(data => res.status(200).json(data))

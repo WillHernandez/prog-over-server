@@ -41,6 +41,22 @@ const getExcerciseNotes = async (excercise) => {
 	return rows[0]
 }
 
+export const deleteExcerciseNote = async req => {
+	const {excercise, index} = req.params
+
+	const notes = await getExcerciseNotes(excercise)
+	notes[0].notes.splice(index, 1)
+	
+	await pool.query(`
+		UPDATE excercises
+		SET notes = ?
+		WHERE name = ?`, [JSON.stringify(notes[0].notes), excercise]
+	)
+	// we can also just return notes[0].notes rather than fetching the notes from our db again but this way confirms it was successfully saved to the db
+	const updatedNotes = await getExcerciseNotes(excercise)
+	return updatedNotes[0].notes
+}
+
 export const getAllExcercises = async () => {
 	const rows = await pool.query('SELECT * FROM excercises')
 	return rows[0]
