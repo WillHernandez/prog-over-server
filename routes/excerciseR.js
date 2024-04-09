@@ -8,22 +8,16 @@ router.post('', (req, res) => {
 	.catch(e => res.status(400).json(e.message))
 })
 
-router.get('', async (req, res) => {
-	try {
-		const data = await excerciseC.getAllExcercises()	
-		res.status(200).json(data)
-	} catch(e) {
-		res.status(400).json(e.message)
-	}
+router.get('', (req, res) => {
+	excerciseC.getAllExcercises()
+	.then(data => res.status(200).json(data))
+	.catch(e => res.status(400).json(e.message))
 })
 
-router.get('/muscles', async (req, res) => {
-	try {
-		const data = await excerciseC.getExcerciseMuscles()	
-		res.status(200).json(data)
-	} catch(e) {
-		res.status(400).json(e.message)
-	}	
+router.get('/muscles', (req, res) => {
+	excerciseC.getExcerciseMuscles()
+	.then(data => res.status(200).json(data))
+	.catch(e => res.status(400).json(e.message))
 })
 
 router.get('/:excercise', (req, res) => {
@@ -46,7 +40,7 @@ router.delete('/notes/:excercise/:index', (req, res) => {
 
 
 router.delete('/:excercise', (req, res) => {
-	excerciseC.deleteExcercise(req.params.excercise)
+	excerciseC.deleteExcercise(req)
 	.then(data => res.status(200).json(data))
 	.catch(e => res.status(400).json(e.message))
 })

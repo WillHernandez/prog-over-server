@@ -12,14 +12,15 @@ const pool = mysql.createPool({
 export const addExcercise = async req => {
 	const { name, muscle, link } = req.body
 	await pool.query(`
-	INSERT INTO excercises (name, primary_muscle, video_link)
-	VALUES(?, ?, ?)`, [name, muscle, link]
+		INSERT INTO excercises (name, primary_muscle, video_link)
+		VALUES(?, ?, ?)`, [name, muscle, link]
 	)
 }
 
 export const addExcerciseNotes = async req => {
+	const { excercise } = req.params.excercise
 	const newNotes = req.body.notes
-	const notes = await getExcerciseNotes(req.params.excercise)
+	const notes = await getExcerciseNotes(excercise)
 	let mergeNotes
 	notes[0].notes === null ? mergeNotes = [newNotes] : 
 	mergeNotes = [...notes[0].notes, newNotes]
@@ -27,13 +28,13 @@ export const addExcerciseNotes = async req => {
 	await pool.query(`
 		UPDATE excercises
 		SET notes = ?
-		WHERE name = ?`, [JSON.stringify(mergeNotes), req.params.excercise]
+		WHERE name = ?`, [JSON.stringify(mergeNotes), excercise]
 	)
-	const updatedExcercise = await getExcercise(req.params.excercise)
+	const updatedExcercise = await getExcercise(excercise)
 	return updatedExcercise	
 }
 
-const getExcerciseNotes = async (excercise) => {
+const getExcerciseNotes = async excercise => {
 	const rows = await pool.query(`
 		SELECT notes FROM excercises
 		WHERE name = ?`, [excercise]
@@ -79,15 +80,16 @@ export const getExcerciseMuscles = async () => {
 	return row[0]
 }
 
-export const deleteExcercise = async name => {
+export const deleteExcercise = async req => {
+	const { excercise } = req.params.excercise
 	await pool.query(`
 	DELETE 
 	FROM excercises 
-	WHERE name = ?`, [name]
+	WHERE name = ?`, [excercise]
 	)
 	const res = {
-		excercise: name,
-		status: `${name} DELETED`
+		excercise: excercise,
+		status: `${excercise} DELETED`
 	}	
 	return res
 }
