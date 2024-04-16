@@ -8,10 +8,8 @@ router.post('/signup', (req, res) => {
 	.catch(e => res.status(400).json(e))
 })
 
-router.post('/signin', (req, res) => {
-	userC.getUser(req)
-	.then(r => r ? res.sendStatus(200) : res.sendStatus(400))
-	.catch(e => res.status(400).json(e))
+router.post('/signin', async (req, res) => {
+	return await userC.getUser(req, res)
 })
 
 // router.delete('/delete', (req, res) => {

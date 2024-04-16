@@ -18,7 +18,7 @@ export const addExcercise = async req => {
 }
 
 export const addExcerciseNotes = async req => {
-	const { excercise } = req.params.excercise
+	const { excercise } = req.params
 	const newNotes = req.body.notes
 	const notes = await getExcerciseNotes(excercise)
 	let mergeNotes
@@ -54,8 +54,8 @@ export const deleteExcerciseNote = async req => {
 		WHERE name = ?`, [JSON.stringify(notes[0].notes), excercise]
 	)
 	// we can also just return notes[0].notes rather than fetching the notes from our db again but this way confirms it was successfully saved to the db
-	const updatedNotes = await getExcerciseNotes(excercise)
-	return updatedNotes[0].notes
+	const updatedExcercise = await getExcercise(excercise)
+	return updatedExcercise
 }
 
 export const getAllExcercises = async () => {
