@@ -41,10 +41,6 @@ export const getUser = async (req, res) => {
 	}
 }
 
-export const isAuthenticated  = async (req, res, next) => {
-	req.session.authorized ? next() : res.sendStatus(401)
-}
-
 export const signOut = (req, res) => {
 	req.session.destroy()
 	res.sendStatus(200)

@@ -2,7 +2,6 @@ import express from "express"
 import dotenv from 'dotenv'
 import { router as excerciseR } from './routes/excerciseR.js'
 import { router as userR } from './routes/userR.js'
-import { isAuthenticated } from "./controllers/userC.js"
 import session from "express-session"
 import morgan from "morgan"
 import cors from 'cors'
@@ -35,7 +34,7 @@ app.use(morgan('tiny'))
 app.use(cors(corsOptions));
 
 app.use("/api/user", userR)
-app.use("/api/excercises", isAuthenticated, excerciseR)
+app.use("/api/excercises", excerciseR)
 // app.use("/api/workout", workoutR)
 
 app.listen(port, () => {
