@@ -21,15 +21,31 @@ export const addUser = async req => {
 
 export const getUser = async (req, res) => {
 	const { username, password } = req.body
-	const row = await pool.query(`
+	try {
+		const row = await pool.query(`
 		SELECT *
 		FROM users
 		WHERE username = ?`, [username]
-	)
-	try {
+		)
 		const passMatch = await bcrypt.compare(password, row[0][0].password)
-		passMatch ? res.sendStatus(200) : res.sendStatus(400)
+		if(passMatch) {
+			req.session.user = row[0][0]
+			req.session.authorized = true
+			req.session.save()
+			res.status(200).json({session: req.session})
+		} else {
+			res.sendStatus(401)
+		}
 	}catch(e) {
-		res.status(400).json(e)
+		res.sendStatus(401)
 	}
+}
+
+export const isAuthenticated  = async (req, res, next) => {
+	req.session.authorized ? next() : res.sendStatus(401)
+}
+
+export const signOut = (req, res) => {
+	req.session.destroy()
+	res.sendStatus(200)
 }

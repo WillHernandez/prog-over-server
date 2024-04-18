@@ -1,8 +1,8 @@
 import { Router } from 'express'
-export const router = Router()
 import * as excerciseC from '../controllers/excerciseC.js'
+export const router = Router()
 
-router.post('', (req, res) => {
+router.post('/add', (req, res) => {
 	excerciseC.addExcercise(req)
 	.then(data => res.status(200).json(data))
 	.catch(e => res.status(400).json(e.message))
