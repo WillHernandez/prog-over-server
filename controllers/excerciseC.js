@@ -10,10 +10,10 @@ const pool = mysql.createPool({
 }).promise()
 
 export const addExcercise = async req => {
-	const { name, muscle, link } = req.body
+	const { name, muscle, category, link} = req.body
 	await pool.query(`
-		INSERT INTO excercises (name, primary_muscle, video_link)
-		VALUES(?, ?, ?)`, [name, muscle, link]
+		INSERT INTO excercises (name, primary_muscle, category, video_link)
+		VALUES(?, ?, ?, ?)`, [name, muscle, category, link]
 	)
 }
 
@@ -72,12 +72,37 @@ export const getExcercise = async name => {
 	return row[0][0]
 }
 
+export const getExcerciseCategory = async category => {
+	const row = await pool.query(`
+	SELECT name 
+	FROM excercises 
+	WHERE category = ?`, [category]
+	)
+	return row[0]
+}
+
 export const getExcerciseMuscles = async () => {
 	const row = await pool.query(`
 	SELECT DISTINCT (primary_muscle)
 	FROM excercises`
 	)
 	return row[0]
+}
+
+export const getExcercisesFilter = async req => {
+	const { excercises } = req.body
+	const promises = excercises.map(ex => pool.query(`
+	SELECT *
+	FROM excercises
+	WHERE primary_muscle = ?`, [ex.label]
+	))
+	const resolve = await Promise.all(promises)
+	const filterSqlNesting = resolve.map((ex) => ex[0])
+	const filteredExcercises = []
+	filterSqlNesting.forEach(excercise => {
+		excercise.forEach(ex => filteredExcercises.push(ex))
+	})
+	return filteredExcercises
 }
 
 export const deleteExcercise = async req => {

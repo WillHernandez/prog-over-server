@@ -26,7 +26,7 @@ app.use(session({
   secret: 'secretkeyforthissession',
   resave: false,
   saveUninitialized: true,
-	cookie: { maxAge: 3600000 }
+	// cookie: { maxAge: 3600000 }
 }))
 
 app.use(express.json())
