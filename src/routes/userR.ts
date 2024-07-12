@@ -3,7 +3,7 @@ export const router = Router()
 import * as userC from '../controllers/userC.js'
 
 router.post('/signup', (req, res) => {
-	userC.addUser(req)
+	userC.addUser(req.body)
 	.then(() => res.sendStatus(200))
 	.catch(e => res.status(400).json(e))
 })

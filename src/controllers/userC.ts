@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 import mysql from 'mysql2'
 import bcrypt	from 'bcrypt'
+import * as type from '../types/types.js'
 dotenv.config()
 
 const pool = mysql.createPool({
@@ -10,16 +11,15 @@ const pool = mysql.createPool({
 	database: process.env.MYSQL_DB
 }).promise()
 
-export const addUser = async req => {
-	const { username, email, password } = req.body
-	const hash = await bcrypt.hash(password, 10)
+export const addUser = async (user: type.NewUser)=> {
+	const hash = await bcrypt.hash(user.password, 10)
 	await pool.query(`
 		INSERT INTO users(username, email, password)	
-		VALUES(?, ?, ?)`, [username, email, hash]
+		VALUES(?, ?, ?)`, [user.username, user.email, hash]
 	)
 }
 
-export const getUser = async (req, res) => {
+export const getUser = async (req: type.EReq, res: type.ERes) => {
 	const { username, password } = req.body
 	try {
 		const row = await pool.query(`
@@ -41,7 +41,7 @@ export const getUser = async (req, res) => {
 	}
 }
 
-export const signOut = (req, res) => {
+export const signOut = (req: type.EReq, res: type.ERes) => {
 	req.session.destroy()
 	res.sendStatus(200)
 }

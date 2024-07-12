@@ -1,15 +1,15 @@
 import express from "express"
 import dotenv from 'dotenv'
-import { router as excerciseR } from './routes/excerciseR.js'
-import { router as userR } from './routes/userR.js'
+import { router as excerciseR } from '../dist/routes/excerciseR.js'
+import { router as userR } from '../dist/routes/userR.js'
 import session from "express-session"
 import morgan from "morgan"
 import cors from 'cors'
-const port = process.env.PORT || 4000
+const port = 4000
 const app = express()
 dotenv.config()
 
-const whitelist = [process.env.FRONTEND, 'http://localhost:3000']
+const whitelist = ['http://localhost:3000']
 const corsOptions = {
 	origin: (origin, callback) => {
 		if(whitelist.indexOf(origin) !== -1 || !origin) {

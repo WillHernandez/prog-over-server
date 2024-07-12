@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 import mysql from 'mysql2'
+import * as type from '../types/types.js'
 dotenv.config()
 
 const pool = mysql.createPool({
@@ -9,17 +10,14 @@ const pool = mysql.createPool({
 	database: process.env.MYSQL_DB
 }).promise()
 
-export const addExcercise = async req => {
-	const { name, muscle, category, link} = req.body
+export const addExcercise = async (ex:type.Excercise) => {
 	await pool.query(`
 		INSERT INTO excercises (name, primary_muscle, category, video_link)
-		VALUES(?, ?, ?, ?)`, [name, muscle, category, link]
+		VALUES(?, ?, ?, ?)`, [ex.name, ex.muscle, ex.category, ex.link]
 	)
 }
 
-export const addExcerciseNotes = async req => {
-	const { excercise } = req.params
-	const newNotes = req.body.notes
+export const addExcerciseNotes = async (excercise: string, newNotes: string) => {
 	const notes = await getExcerciseNotes(excercise)
 	let mergeNotes
 	notes[0].notes === null ? mergeNotes = [newNotes] : 
@@ -34,17 +32,15 @@ export const addExcerciseNotes = async req => {
 	return updatedExcercise	
 }
 
-const getExcerciseNotes = async excercise => {
+const getExcerciseNotes = async (ex:string) => {
 	const rows = await pool.query(`
 		SELECT notes FROM excercises
-		WHERE name = ?`, [excercise]
+		WHERE name = ?`, [ex]
 	)
 	return rows[0]
 }
 
-export const deleteExcerciseNote = async req => {
-	const {excercise, index} = req.params
-
+export const deleteExcerciseNote = async (excercise: string, index: number)=> {
 	const notes = await getExcerciseNotes(excercise)
 	notes[0].notes.splice(index, 1)
 	
@@ -63,11 +59,11 @@ export const getAllExcercises = async () => {
 	return rows[0]
 }
 
-export const getExcercise = async name => {
+export const getExcercise = async (excercise:string) => {
 	const row = await pool.query(`
 	SELECT *
 	FROM excercises 
-	WHERE name = ?`, [name]
+	WHERE name = ?`, [excercise]
 	)
 	return row[0][0]
 }
@@ -89,8 +85,7 @@ export const getExcerciseMuscles = async () => {
 	return row[0]
 }
 
-export const getExcercisesFilter = async req => {
-	const { excercises } = req.body
+export const getExcercisesFilter = async excercises => {
 	const promises = excercises.map(ex => pool.query(`
 	SELECT *
 	FROM excercises
@@ -105,17 +100,13 @@ export const getExcercisesFilter = async req => {
 	return filteredExcercises
 }
 
-export const deleteExcercise = async req => {
-	const { excercise } = req.params.excercise
+export const deleteExcercise = async (ex:string) => {
 	await pool.query(`
 	DELETE 
 	FROM excercises 
-	WHERE name = ?`, [excercise]
+	WHERE name = ?`, [ex]
 	)
-	const res = {
-		excercise: excercise,
-		status: `${excercise} DELETED`
-	}	
+	const res = { ex, status: `${ex} DELETED` }	
 	return res
 }
 
