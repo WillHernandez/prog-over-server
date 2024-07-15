@@ -1,12 +1,17 @@
-FROM node:20-alpine
-# RUN addgroup app && adduser -S -G app app
-# USER app
+# Build stage
+FROM node:16-alpine AS build
 WORKDIR /app
-COPY package*.json ./
-# USER root
-# RUN chown -R app:app .
+COPY package*.json .
 RUN npm install
-COPY . . 
+COPY . .
 EXPOSE 4000 
-# USER app
-CMD ["node", "server.js"]
+RUN npm run build
+
+#Production stage
+FROM node:16-alpine AS production
+WORKDIR /app
+COPY package*.json .
+RUN npm ci --only=production
+COPY --from=build /app/dist ./dist
+EXPOSE 4000 
+CMD ["node", "dist/server.js"]
