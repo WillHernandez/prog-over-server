@@ -31,6 +31,7 @@ app.use(session({
 app.use(express.json())
 app.use(cors(corsOptions));
 
+// app.use("", (req,res) => res.status(200).json('Node Success'))
 app.use("/api/user", userR)
 app.use("/api/excercises", excerciseR)
 // app.use("/api/workout", workoutR)

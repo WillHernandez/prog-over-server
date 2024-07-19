@@ -6,8 +6,8 @@ export type ERes = express.Response;
 export type Excercise = {
 	name: string
 	muscle: string
-	category: string
-	link: string
+	category?: string
+	link?: string
 }
 
 export type NewUser = {

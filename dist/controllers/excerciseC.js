@@ -1,14 +1,6 @@
-import dotenv from 'dotenv';
-import mysql from 'mysql2';
-dotenv.config();
-const pool = mysql.createPool({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASS,
-    database: process.env.MYSQL_DB
-}).promise();
+import sql_pool from '../api/mysql.js';
 export const addExcercise = async (ex) => {
-    await pool.query(`
+    await sql_pool.query(`
 		INSERT INTO excercises (name, primary_muscle, category, video_link)
 		VALUES(?, ?, ?, ?)`, [ex.name, ex.muscle, ex.category, ex.link]);
 };
@@ -17,7 +9,7 @@ export const addExcerciseNotes = async (excercise, newNotes) => {
     let mergeNotes;
     notes[0].notes === null ? mergeNotes = [newNotes] :
         mergeNotes = [...notes[0].notes, newNotes];
-    await pool.query(`
+    await sql_pool.query(`
 		UPDATE excercises
 		SET notes = ?
 		WHERE name = ?`, [JSON.stringify(mergeNotes), excercise]);
@@ -25,7 +17,7 @@ export const addExcerciseNotes = async (excercise, newNotes) => {
     return updatedExcercise;
 };
 const getExcerciseNotes = async (ex) => {
-    const rows = await pool.query(`
+    const rows = await sql_pool.query(`
 		SELECT notes FROM excercises
 		WHERE name = ?`, [ex]);
     return rows[0];
@@ -33,7 +25,7 @@ const getExcerciseNotes = async (ex) => {
 export const deleteExcerciseNote = async (excercise, index) => {
     const notes = await getExcerciseNotes(excercise);
     notes[0].notes.splice(index, 1);
-    await pool.query(`
+    await sql_pool.query(`
 		UPDATE excercises
 		SET notes = ?
 		WHERE name = ?`, [JSON.stringify(notes[0].notes), excercise]);
@@ -42,31 +34,31 @@ export const deleteExcerciseNote = async (excercise, index) => {
     return updatedExcercise;
 };
 export const getAllExcercises = async () => {
-    const rows = await pool.query('SELECT * FROM excercises');
+    const rows = await sql_pool.query('SELECT * FROM excercises');
     return rows[0];
 };
 export const getExcercise = async (excercise) => {
-    const row = await pool.query(`
+    const row = await sql_pool.query(`
 	SELECT *
 	FROM excercises 
 	WHERE name = ?`, [excercise]);
     return row[0][0];
 };
 export const getExcerciseCategory = async (category) => {
-    const row = await pool.query(`
+    const row = await sql_pool.query(`
 	SELECT name 
 	FROM excercises 
 	WHERE category = ?`, [category]);
     return row[0];
 };
 export const getExcerciseMuscles = async () => {
-    const row = await pool.query(`
+    const row = await sql_pool.query(`
 	SELECT DISTINCT (primary_muscle)
 	FROM excercises`);
     return row[0];
 };
 export const getExcercisesFilter = async (excercises) => {
-    const promises = excercises.map(ex => pool.query(`
+    const promises = excercises.map(ex => sql_pool.query(`
 	SELECT *
 	FROM excercises
 	WHERE primary_muscle = ?`, [ex.label]));
@@ -79,7 +71,7 @@ export const getExcercisesFilter = async (excercises) => {
     return filteredExcercises;
 };
 export const deleteExcercise = async (ex) => {
-    await pool.query(`
+    await sql_pool.query(`
 	DELETE 
 	FROM excercises 
 	WHERE name = ?`, [ex]);

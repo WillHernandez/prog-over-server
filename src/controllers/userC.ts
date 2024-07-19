@@ -1,19 +1,10 @@
-import dotenv from 'dotenv'
-import mysql from 'mysql2'
+import sql_pool from '../api/mysql.js'
 import bcrypt	from 'bcrypt'
 import * as type from '../types/types.js'
-dotenv.config()
-
-const pool = mysql.createPool({
-	host: process.env.MYSQL_HOST,
-	user: process.env.MYSQL_USER,
-	password: process.env.MYSQL_PASS,
-	database: process.env.MYSQL_DB
-}).promise()
 
 export const addUser = async (user: type.NewUser)=> {
 	const hash = await bcrypt.hash(user.password, 10)
-	await pool.query(`
+	await sql_pool.query(`
 		INSERT INTO users(username, email, password)	
 		VALUES(?, ?, ?)`, [user.username, user.email, hash]
 	)
@@ -22,7 +13,7 @@ export const addUser = async (user: type.NewUser)=> {
 export const getUser = async (req: type.EReq, res: type.ERes) => {
 	const { username, password } = req.body
 	try {
-		const row = await pool.query(`
+		const row = await sql_pool.query(`
 		SELECT *
 		FROM users
 		WHERE username = ?`, [username]
