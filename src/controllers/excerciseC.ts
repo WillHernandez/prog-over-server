@@ -100,4 +100,3 @@ export const deleteExcercise = async (ex:string) => {
 	const res = { ex, status: `${ex} DELETED` }	
 	return res
 }
-

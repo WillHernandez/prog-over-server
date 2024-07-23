@@ -1,12 +1,9 @@
 import mysql from 'mysql2'
 
+// Check .env for prev vals
+// replace '127.0.0.1' or 'localhost' DB with docker internal host
 const sql_pool = mysql.createPool({
-	// host: process.env.MYSQL_HOST,
-	// port: 3307,
-	// user: process.env.MYSQL_USER,
-	// password: process.env.MYSQL_PASS,
-	// database: process.env.MYSQL_DB
-	host: "host.docker.internal",
+	host: "host.docker.internal", 
 	port: 3307,
 	user: "root",
 	password: "root",

@@ -5,7 +5,7 @@ const sql_pool = mysql.createPool({
     // user: process.env.MYSQL_USER,
     // password: process.env.MYSQL_PASS,
     // database: process.env.MYSQL_DB
-    host: "host.docker.internal",
+    host: "host.docker.internal", // important, replaces '127.0.0.1' or 'localhost'
     port: 3307,
     user: "root",
     password: "root",
