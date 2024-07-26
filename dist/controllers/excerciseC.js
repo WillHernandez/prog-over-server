@@ -1,8 +1,19 @@
 import sql_pool from '../api/mysql.js';
-export const addExcercise = async (ex) => {
-    await sql_pool.query(`
-		INSERT INTO excercises (name, primary_muscle, category, video_link)
-		VALUES(?, ?, ?, ?)`, [ex.name, ex.muscle, ex.category, ex.link]);
+export const addExcercise = async (req, res) => {
+    const { name, muscle, category, link } = req.body;
+    const excercise = await getExcercise(name);
+    try {
+        if (!excercise) {
+            await sql_pool.query(`
+				INSERT INTO excercises (name, primary_muscle, category, video_link)
+				VALUES(?, ?, ?, ?)`, [name, muscle, category, link]);
+            return res.sendStatus(200);
+        }
+        return res.status(409).json('Excercise already exists');
+    }
+    catch (e) {
+        return res.status(406).json(e.message);
+    }
 };
 export const addExcerciseNotes = async (excercise, newNotes) => {
     const notes = await getExcerciseNotes(excercise);

@@ -1,17 +1,16 @@
 import { Router } from 'express'
-// import { isAuthenticated } from '../controllers/userAuth.js'
+import isAuthenticated from '../controllers/userAuth.js'
 import * as excerciseC from '../controllers/excerciseC.js'
 export const router = Router()
 
-
+// create...
 // router.post('/add', isAuthenticated, (req, res) => {
 router.post('/add', (req, res) => {
-	excerciseC.addExcercise(req.body.excercise)
-	.then(data => res.status(200).json(data))
-	.catch(e => res.status(400).json(e.message))
+	excerciseC.addExcercise(req, res)
 })
 
-router.get('', (req, res) => {
+// read...
+router.get('', isAuthenticated, (req, res) => {
 	excerciseC.getAllExcercises()
 	.then(data => res.status(200).json(data))
 	.catch(e => res.status(400).json(e.message))
@@ -29,6 +28,7 @@ router.get('/excercise/:category', (req, res) => {
 	.catch(e => res.status(400).json(e.message))
 })
 
+// router.get('/:excercise', isAuthenticated, (req, res) => {
 router.get('/:excercise', (req, res) => {
 	excerciseC.getExcercise(req.params.excercise)
 	.then(data => res.status(200).json(data))
@@ -41,24 +41,22 @@ router.post('/filter', (req, res) => {
 	.catch(e => res.status(400).json(e.message))
 })
 
-// router.post('/notes/:excercise', isAuthenticated, (req, res) => {
-router.post('/notes/:excercise', (req, res) => {
+// update...
+router.post('/notes/:excercise', isAuthenticated, (req, res) => {
 	excerciseC.addExcerciseNotes(req.params.excercise, req.body.notes)
 	.then(data => res.status(200).json(data))
 	.catch(e => res.status(400).json(e.message))
 })
 
-// router.delete('/notes/:excercise/:index', isAuthenticated, (req, res) => {
-router.delete('/notes/:excercise/:index', (req, res) => {
-	excerciseC.deleteExcerciseNote(req.params.excercise, req.params.index)
+// delete...
+router.delete('/:excercise', isAuthenticated, (req, res) => {
+	excerciseC.deleteExcercise(req.params.excercise)
 	.then(data => res.status(200).json(data))
 	.catch(e => res.status(400).json(e.message))
 })
 
-
-// router.delete('/:excercise', isAuthenticated, (req, res) => {
-router.delete('/:excercise', (req, res) => {
-	excerciseC.deleteExcercise(req.params.excercise)
+router.delete('/notes/:excercise/:index', isAuthenticated, (req, res) => {
+	excerciseC.deleteExcerciseNote(req.params.excercise, req.params.index)
 	.then(data => res.status(200).json(data))
 	.catch(e => res.status(400).json(e.message))
 })
